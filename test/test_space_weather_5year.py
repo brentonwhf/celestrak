@@ -79,9 +79,16 @@ def test_get_item(client):
     assert len(result4.index.get_level_values('epoch')) == 1
     assert pd.to_datetime(result4.index.get_level_values('epoch')[0]).date() == datetime4.date()
     # test the case when the datetime is greater than the maximum observed datetime
-    datetime5 = datetime4 + timedelta(days=2)
-    with pytest.raises(NotImplementedError):
-        result5 = client.sw[datetime5]
-    # test the case when the datetime is intolerably large
-
-    assert True
+    datetime5 = datetime4 + timedelta(days=1)
+    result5 = client.sw[datetime5]
+    assert len(result5.index.get_level_values('epoch')) == 1
+    assert pd.to_datetime(result5.index.get_level_values('epoch')[0]).date() == datetime5.date()
+    # test the case when the datetime is equal to the maximum predicted datetime
+    datetime6 = pd.Timestamp(client.sw.df_predicted.index.get_level_values('epoch').max())
+    result6 = client.sw[datetime6]
+    assert len(result6.index.get_level_values('epoch')) == 1
+    assert pd.to_datetime(result6.index.get_level_values('epoch')[0]).date() == datetime6.date()
+    # test the case when the datetime is greater than the predicted values
+    datetime7 = pd.Timestamp(client.sw.df_predicted.index.get_level_values('epoch').max()) + timedelta(days=1)
+    with pytest.raises(ValueError):
+        result7 = client.sw[datetime7]

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 import requests
+import numpy as np
 
 
 class CelestrakData(ABC):
@@ -65,9 +66,21 @@ class CelestrakData(ABC):
         """ convert the tables of data within the text file to individual dataframes """
         raise NotImplementedError
 
+    def forecast(self, epoch, **kwargs):
+        """
+            predict a data value based on linear interpolation
+
+            Args:
+                epoch (datetime.date):      the date of the data that is desired
+
+            Returns:
+
+        """
+        raise NotImplementedError
+
     def __getitem__(self, epoch):
         """
-            get a historical data value based on the input date else predict a historical data value to within a
+            get a historical data value based on the input date else predict a data value to within a
                 tolerable accuracy
 
             Args:
@@ -78,12 +91,12 @@ class CelestrakData(ABC):
         """
         if epoch < self.df_observed.index.get_level_values('epoch').min():
             raise ValueError
-        # TODO: determine what the upper limit for epoch is
         if epoch > self.df_predicted.index.get_level_values('epoch').max():
             raise ValueError
         epoch_date = pd.Timestamp(year=epoch.year, month=epoch.month, day=epoch.day)
         if epoch_date <= self.df_observed.index.get_level_values('epoch').max():
             return self.df_observed.loc[self.df_observed.index.get_level_values('epoch') == epoch_date]
+        elif epoch_date <= self.df_predicted.index.get_level_values('epoch').max():
+            return self.df_predicted.loc[self.df_predicted.index.get_level_values('epoch') == epoch_date]
         else:
-            # TODO: predict future spaceweather using an interpolation or other method
-            raise NotImplementedError
+            raise ValueError
