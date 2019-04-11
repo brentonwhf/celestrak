@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 import requests
-import numpy as np
 
 
 class CelestrakData(ABC):
@@ -68,7 +67,7 @@ class CelestrakData(ABC):
 
     def forecast(self, epoch, **kwargs):
         """
-            predict a data value based on linear interpolation
+            predict a data value based on an extrapolation of the current data
 
             Args:
                 epoch (datetime.date):      the date of the data that is desired
@@ -84,10 +83,10 @@ class CelestrakData(ABC):
                 tolerable accuracy
 
             Args:
-                epoch (datetime.date):      the date of the data that is desired
+                epoch (datetime.datetime):      the date of the data that is desired
 
             Returns:
-
+                (pandas.Series):            the row of data associated with the input epoch
         """
         if epoch < self.df_observed.index.get_level_values('epoch').min():
             raise ValueError
