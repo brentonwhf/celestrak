@@ -1,8 +1,8 @@
 import pytest
 import pandas as pd
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
 
-from space_weather_5year import SpaceWeather5Year
+from src.space_weather.space_weather_5_year import SpaceWeather5Year
 
 
 @pytest.fixture(scope='function')
@@ -25,13 +25,6 @@ def test_df_observed(client):
         client.sw.df_observed = pd.DataFrame()
     with pytest.raises(TypeError):
         client.sw.df_observed = 'test'
-    # test the getting of an invalid df_observed
-    client.sw._df_observed = pd.DataFrame()
-    with pytest.raises(ValueError):
-        test = client.sw.df_observed
-    client.sw._df_observed = 'test'
-    with pytest.raises(TypeError):
-        test = client.sw.df_observed
 
 
 def test_df_predicted(client):
@@ -47,13 +40,6 @@ def test_df_predicted(client):
         client.sw.df_predicted = pd.DataFrame()
     with pytest.raises(TypeError):
         client.sw.df_predicted = 'test'
-    # test the getting of an invalid df_predicted
-    client.sw._df_predicted = pd.DataFrame()
-    with pytest.raises(ValueError):
-        test = client.sw.df_predicted
-    client.sw._df_predicted = 'test'
-    with pytest.raises(TypeError):
-        test = client.sw.df_predicted
 
 
 def test_get_item(client):

@@ -1,4 +1,4 @@
-from space_weather_all import SpaceWeatherAll
+from space_weather.space_weather_all import SpaceWeatherAll
 
 
 class SpaceWeatherRange(SpaceWeatherAll):
@@ -32,6 +32,10 @@ class SpaceWeatherRange(SpaceWeatherAll):
         super().__init__()
         self._epoch_min = epoch_min
         self._epoch_max = epoch_max
-        self.df_observed = self.df_observed.loc[self.df_observed.index.get_level_values('epoch') <= epoch_max]
+        if epoch_min < self.df_observed.index.get_level_values('epoch').min():
+            raise ValueError
+        if epoch_max > self.df_observed.index.get_level_values('epoch').max():
+            raise ValueError
         self.df_observed = self.df_observed.loc[self.df_observed.index.get_level_values('epoch') >= epoch_min]
+        self.df_observed = self.df_observed.loc[self.df_observed.index.get_level_values('epoch') <= epoch_max]
         self._df_predicted = None
